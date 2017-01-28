@@ -1,6 +1,7 @@
 var express = require('express');  
 var bodyParser = require('body-parser');  
 var request = require('request');  
+var annie = require('./annie.js')
 var app = express();
 
 app.use(bodyParser.urlencoded({extended: false}));  
@@ -42,7 +43,9 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: "--SENDING COMMAND LIST--"});
                     showHelpMessage(sender);
                     break;
-
+                case "medsTest":
+                    sendMessage(sender, {text: annie.getMedications(0)});
+                    break;
                 default:
                    sendMessage(sender, {text: "Echo: " + event.message.text});
                     break;
