@@ -31,7 +31,7 @@ function getTimeForMedication(medicationSchedule) {
         var timeToNextMedication = timeInHours + " hours and " + timeInMinutes + " minutes";
         return createScheduleResponse(medicationSchedule, timeToNextMedication);
     }
-    return "Nothing";
+    return currentHour + "hours " + currentMinute + "minutes";
 }
 
 function timeToNotifyUser(timeInHours, timeInMinutes) {
