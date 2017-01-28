@@ -41,7 +41,7 @@ app.post('/webhook', function (req, res) {
                     break;
                 case "help":
                     sendMessage(sender, {text: "--SENDING COMMAND LIST--"});
-                    showMessage(event.sender.id, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
+                    sendMessage(event.sender.id, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
                      break;
                 case "medsTest":
                     sendMessage(sender, {text: annie.getMedications(0)});
