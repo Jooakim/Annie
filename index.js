@@ -47,6 +47,7 @@ app.post('/webhook', function (req, res) {
                 case "simon":
                     var output = annie.getDummyJson(0);
                     sendMessage(sender, {text: output.name});
+                    break;
                 default:
                    sendMessage(sender, {text: "Echo: " + event.message.text});
                     break;
