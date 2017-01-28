@@ -30,7 +30,6 @@ app.post('/webhook', function (req, res) {
 
         // Check if a message and text string exist
         if (event.message && event.message.text) {
-            let message = "";
             switch(event.message.text) {
                 case "menu":
                     sendMessage(sender, {text: "--DISPLAY MENU--"});
