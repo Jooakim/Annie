@@ -1,8 +1,10 @@
-export function getMedications(userId) {
+var exports = module.exports = {};
+
+exports.getMedications = function(userId) {
     // Connect to database and extract medictions
     
     // Used for testing
-    var medJson = {"name":"Weed", "dosage":"1g", "timePerDay":"08:00"};
+    var medJson = {"name":"Weed", "dosage":"1g", "timePerDay":"20:00"};
     getTimeForMedication(medJson);
 }
 
@@ -17,6 +19,10 @@ function getTimeForMedication(medicationSchedule) {
         var tmpTime = medicationSchedule.timePerDay.split(":");
         var timeInHours = parseInt(tmpTime[0]) - currentHour;
         var timeInMinutes = parseInt(tmpTime[1]) - currentMinute;
+        if (timeInMinutes < 0) {
+            timeInHours--;
+            timeInMinutes += 60;
+        }
 
         timeToNotify = timeInHours >= 0 && timeToNotifyUser(timeInHours, timeInMinutes);
     }
@@ -28,7 +34,7 @@ function getTimeForMedication(medicationSchedule) {
 }
 
 function timeToNotifyUser(timeInHours, timeInMinutes) {
-    const hoursLeftForNotification = 0;
+    const hoursLeftForNotification = 3;
     const minutesLeftForNotification = 30;
 
     return timeInHours*60 + timeInMinutes <= hoursLeftForNotification*60 + minutesLeftForNotification;
@@ -42,5 +48,3 @@ function createScheduleResponse(medicationSchedule, timeToNextMedication) {
    console.log(message);
 }
 
-
-var exports = module.exports = {};
