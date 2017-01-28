@@ -40,8 +40,8 @@ app.post('/webhook', function (req, res) {
                     break;
                 case "help":
                     sendMessage(sender, {text: "--SENDING COMMAND LIST--"});
-                    showHelpMessage(event.sender.id);
-                     break;
+                    showHelpMessage(sender);
+                    break;
 
                 default:
                    sendMessage(sender, {text: "Echo: " + event.message.text});
@@ -55,31 +55,37 @@ app.post('/webhook', function (req, res) {
 
 // Testing
 function sendTestMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "generic",
-          elements: [{
-            title: "Add Prescriptions",
-            buttons: [{
-              type: "postback",
-              title: "Call Postback 1",
-              payload: "Postback 1 Called",
+let messageData = {
+    "attachment": {
+        "type": "template",
+        "payload": {
+            "template_type": "generic",
+            "elements": [{
+                "title": "First card",
+                "subtitle": "Element #1 of an hscroll",
+                "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
+                "buttons": [{
+                    "type": "web_url",
+                    "url": "https://www.messenger.com",
+                    "title": "web url"
+                }, {
+                    "type": "postback",
+                    "title": "Postback",
+                    "payload": "Payload for first element in a generic bubble",
+                }],
             }, {
-              type: "postback",
-              title: "Call Postback 2",
-              payload: "Postback 2 Called",
-            }],
-          }]
+                "title": "Second card",
+                "subtitle": "Element #2 of an hscroll",
+                "image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
+                "buttons": [{
+                    "type": "postback",
+                    "title": "Postback",
+                    "payload": "Payload for second element in a generic bubble",
+                }],
+            }]
         }
-      }
     }
-  };  
+}; 
 
   sendMessage(recipientId, messageData);
 }
