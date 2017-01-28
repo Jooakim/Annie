@@ -9,7 +9,7 @@ exports.getMedications = function(userId) {
 }
 
 exports.getDummyJson = function(userId){
-    var medJson = {name:"Simon", dosage:"1g"};
+    var medJson = {name:"rolf", dosage:"1g"};
     return medJson;
 }
 
