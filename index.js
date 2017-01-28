@@ -40,7 +40,7 @@ app.post('/webhook', function (req, res) {
                     break;
                 case "help":
                     sendMessage(sender, {text: "--SENDING COMMAND LIST--"});
-                    showHelpMessage(event.sender.id);
+                    showMessage(event.sender.id, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"}});
                      break;
 
                 default:
@@ -82,28 +82,6 @@ function sendTestMessage(recipientId) {
   };  
 
   sendMessage(recipientId, messageData);
-}
-
-function showHelpMessage(recipientId)
-{
-    var msg = "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
-        method: 'POST',
-        json:{
-            recipient: {id: recipientId},
-            message: msg,
-        }
-    },
-    function(error,response,body){
-        if(error){
-            console.log('Error sending message: ', error);
-        }else if (response.body.error){
-            console.log('Error: ', response.body.error);
-        }
-        }
-    })
 }
 
 // generic function sending messages
