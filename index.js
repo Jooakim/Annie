@@ -21,21 +21,70 @@ app.get('/webhook', function (req, res) {
     }
 });
 
+// Handle user messages
 app.post('/webhook', function (req, res) {  
     var events = req.body.entry[0].messaging;
     for (i = 0; i < events.length; i++) {
-        var event = events[i];
-        if( event.message && event.message.text === "!help"){
-            showHelpMessage(event.sender.id);
-        }
+        let event = events[i];
+        let sender = event.sender.id;
+
+        // Check if a message and text string exist
         if (event.message && event.message.text) {
-            sendMessage(event.sender.id, {text: "Echo: " + event.message.text});
+            switch(event.message.text) {
+                case "menu":
+                    sendMessage(sender, {text: "--DISPLAY MENU--"});
+                    break;
+                case "test":
+                    sendMessage(sender, {text: "--SENDING TEST MESSAGE--"});
+                    sendTestMessage(sender);
+                    break;
+                case "help":
+                    sendMessage(sender, {text: "--SENDING COMMAND LIST--"});
+                    showHelpMessage(event.sender.id);
+                     break;
+
+                default:
+                   sendMessage(sender, {text: "Echo: " + event.message.text});
+                    break;
+            }
+            
         }
     }
     res.sendStatus(200);
 });
 
-funciton showHelpMessage(recipientId)
+// Testing
+function sendTestMessage(recipientId) {
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "generic",
+          elements: [{
+            title: "Add Prescriptions",
+            buttons: [{
+              type: "postback",
+              title: "Call Postback 1",
+              payload: "Postback 1 Called",
+            }, {
+              type: "postback",
+              title: "Call Postback 2",
+              payload: "Postback 2 Called",
+            }],
+          }]
+        }
+      }
+    }
+  };  
+
+  sendMessage(recipientId, messageData);
+}
+
+function showHelpMessage(recipientId)
 {
     var msg = "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"
     request({
