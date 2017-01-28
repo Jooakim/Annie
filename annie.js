@@ -8,6 +8,11 @@ exports.getMedications = function(userId) {
     return getTimeForMedication(medJson);
 }
 
+exports.getDummyJson = function(userId){
+    var medJson = {name:"Simon", dosage:"1g"};
+    return medJson;
+}
+
 function getTimeForMedication(medicationSchedule) {
     var date = new Date();
 
