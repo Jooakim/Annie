@@ -104,7 +104,7 @@ function showUser(recipientId){
         client
             .query('SELECT name FROM users WHERE userid = ' + recipientId + ';')
             .on('row', function(row) {
-                console.log(row);
+                sendMessage(recipientId, row.name);
             });
     });
 };
