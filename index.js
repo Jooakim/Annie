@@ -46,6 +46,8 @@ app.post('/webhook', function (req, res) {
                 case "menu":
                     showMenu(sender);
                     break;
+                case 'showMed':
+                    showUser(sender);
                 case "help":
                     sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
                     break;
@@ -94,11 +96,25 @@ function addMed(recipientId){
         console.log('Connected to postgres! Getting schemas...');
 
         client
-            .query('INSERT INTO users VALUES (' + recipientId + ', Ralf)')
+            .query('INSERT INTO users (userid, name) VALUES($1, $2)', [recipientId, 'Goran'])
             .on('row', function(row) {
                 console.log(JSON.stringify(row));
             });
-});
+    });
+};
+
+function showUser(recipientId){
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+
+        client
+            .query('SELECT name FROM users WHERE userid = ' + recipientId + ';')
+            .on('row', function(row) {
+                sendMessage(recipientId, row);
+            });
+    });
 };
 function removeMed(recipientId){
     sendMessage(recipientId, {text: "This should list the meds, numbered, and the number chosen should be removed (after asking)"});
