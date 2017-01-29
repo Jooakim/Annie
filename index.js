@@ -70,18 +70,7 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: "Echo: " + event.message.text});
                     break;
             }
-        } else if (event.postback) {
-            switch(event.postback) {
-                case "PAYLOAD_ADD":
-                    showAddMenu(sender);
-                    break;
-                case "PAYLOAD_REMOVE":
-                    showRemoveMenu(sender);
-                    break;
-                default:
-                    break;
-            }
-        }
+        } 
     }
     res.sendStatus(200);
 });
