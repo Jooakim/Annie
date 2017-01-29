@@ -73,6 +73,9 @@ app.post('/webhook', function (req, res) {
                 case "!status":
                     statMed(sender);
                     break;
+                case "showDb":
+                    showDb();
+                    break;
                 case "!ice":
                     emergency(sender);
                     break;
@@ -111,6 +114,20 @@ function addUser(recipientId, name){
                 sendMessage(recipient, {text: "Added user " + name + " to database"})
             }).on('error', function(err){
                sendMessage(recipientId, {text: "The user is already initialized"}) 
+            });
+    });
+};
+
+function showDb(){
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+
+        client
+            .query('SELECT * FROM users, user_meds, meds;')
+            .on('row', function(row) {
+                console.log(JSON.stringify(row));
             });
     });
 };
