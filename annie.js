@@ -5,7 +5,7 @@ exports.getMedications = function(userId) {
     
     // Used for testing
     var medJson = {"name":"Weed", "dosage":"1g", "timePerDay":"20:00"};
-    getTimeForMedication(medJson);
+    return getTimeForMedication(medJson);
 }
 
 function getTimeForMedication(medicationSchedule) {
@@ -29,8 +29,9 @@ function getTimeForMedication(medicationSchedule) {
 
     if (timeToNotify) {
         var timeToNextMedication = timeInHours + " hours and " + timeInMinutes + " minutes";
-        createScheduleResponse(medicationSchedule, timeToNextMedication);
+        return createScheduleResponse(medicationSchedule, timeToNextMedication);
     }
+    return currentHour + "hours " + currentMinute + "minutes";
 }
 
 function timeToNotifyUser(timeInHours, timeInMinutes) {
@@ -44,7 +45,7 @@ function createScheduleResponse(medicationSchedule, timeToNextMedication) {
    if (timeToNextMedication != "") {
        message = "Time to take " + medicationSchedule.name + " in " + timeToNextMedication;
    }
+   return message;
 
-   console.log(message);
 }
 

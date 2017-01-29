@@ -41,10 +41,22 @@ app.post('/webhook', function (req, res) {
                     break;
                 case "help":
                     sendMessage(sender, {text: "--SENDING COMMAND LIST--"});
-                    sendMessage(event.sender.id, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
+                    sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
                      break;
                 case "medsTest":
                     sendMessage(sender, {text: annie.getMedications(0)});
+                    break;
+                case "!add":
+                    addMed(sender);
+                    break;
+                case "!remove":
+                    removeMed(sender);
+                    break;
+                case "!status":
+                    statMed(sender);
+                    break;
+                case "!ice":
+                    Emergency(sender);
                     break;
                 default:
                    sendMessage(sender, {text: "Echo: " + event.message.text});
@@ -55,7 +67,18 @@ app.post('/webhook', function (req, res) {
     }
     res.sendStatus(200);
 });
-
+function addMed(recipientId){
+    sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
+};
+function removeMed(recipientId){
+    sendMessage(recipientId, {text: "This should list the meds, numbered, and the number chosen should be removed (after asking)"});
+};
+function statMed(recipientId){
+    sendMessage(recipientId, {text: "This should post the stat of all Meds taken in a list, with duration left, frequency, and med name"});
+};
+function Emergency(recipientId){
+    sendMessage(recipientId, {text: "THIS SHOULD CALL SOMEONE IMPORTANT YO"});
+};
 // Testing
 function sendTestMessage(recipientId) {
 let messageData = {
