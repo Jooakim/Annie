@@ -1,5 +1,5 @@
 var exports = module.exports = {};
-const TABLE_NAME;
+
 
 exports.getMedications = function(userId) {
     // Connect to database and extract medictions
