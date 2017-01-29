@@ -76,10 +76,6 @@ app.post('/webhook', function (req, res) {
                 case "!ice":
                     emergency(sender);
                     break;
-                case "simon":
-                    var output = annie.getDummyJson(0);
-                    sendMessage(sender, {text: output.name});
-                    break;
                 case "addMed":
                     addNewMedication(sender, "test hallo olla");
                     break;
@@ -87,7 +83,7 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: "Echo: " + event.message.text});
                     break;
             }
-        } else if (event.postback) {
+        } /*else if (event.postback) {
             // Else check if a postback has been found (as a result of clicking a button)
             switch(event.postback) {
                 case "PAYLOAD_ADD":
@@ -97,7 +93,7 @@ app.post('/webhook', function (req, res) {
                     showRemoveMenu(sender);
                     break;
             }
-        }
+        }*/
     }
     res.sendStatus(200);
 });
@@ -180,7 +176,7 @@ function showMenu(recipientId) {
                         "type": "postback",
                         "title": "Remove a prescription.",
                         "payload": "PAYLOAD_REMOVE"
-                    }],
+                    }]
                 }
             }
         }
