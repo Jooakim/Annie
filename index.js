@@ -108,7 +108,7 @@ function addUser(recipientId, name){
         client
             .query('INSERT INTO users (userid, name) VALUES($1, $2)', [recipientId, name])
             .on('row', function(row) {
-                console.log(JSON.stringify(row));
+                sendMessage(recipient, {text: "Added user " + name + " to database"})
             }).on('error', function(err){
                sendMessage(recipientId, {text: "The user is already initialized"}) 
             });
