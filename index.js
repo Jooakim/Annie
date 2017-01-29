@@ -43,7 +43,7 @@ app.post('/webhook', function (req, res) {
         if (event.message && event.message.text) {
             switch(event.message.text) {
                 case "menu":
-                    //showMenu(sender);
+                    showMenu(sender);
                     break;
                 case "help":
                     sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
