@@ -8,6 +8,13 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());  
 app.listen((process.env.PORT || 3000));
 
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*---------------------------------------------- Facebook webhook        --------------------------------------------- */
+/*----------------------------------------------                         --------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+
 // Server frontpage
 app.get('/', function (req, res) {  
     res.send('Welcome to our bot');
@@ -33,11 +40,7 @@ app.post('/webhook', function (req, res) {
         if (event.message && event.message.text) {
             switch(event.message.text) {
                 case "menu":
-                    sendMessage(sender, {text: "--DISPLAY MENU--"});
-                    break;
-                case "test":
-                    sendMessage(sender, {text: "--SENDING TEST MESSAGE--"});
-                    sendTestMessage(sender);
+                    showMenu(sender);
                     break;
                 case "help":
                     sendMessage(sender, {text: "--SENDING COMMAND LIST--"});
@@ -58,11 +61,28 @@ app.post('/webhook', function (req, res) {
                 case "!ice":
                     Emergency(sender);
                     break;
+                case "medsTest":
+                    sendMessage(sender, {text: annie.getMedications(0)});
+                    break;
+                case "simon":
+                    var output = annie.getDummyJson(0);
+                    sendMessage(sender, {text: output.name});
+                    break;
                 default:
-                   sendMessage(sender, {text: "Echo: " + event.message.text});
+                    sendMessage(sender, {text: "Echo: " + event.message.text});
                     break;
             }
-            
+        } else if (event.postback) {
+            switch(event.postback) {
+                case "PAYLOAD_ADD":
+                    showAddMenu(sender);
+                    break;
+                case "PAYLOAD_REMOVE":
+                    showAddMenu(sender);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     res.sendStatus(200);
@@ -79,42 +99,33 @@ function statMed(recipientId){
 function Emergency(recipientId){
     sendMessage(recipientId, {text: "THIS SHOULD CALL SOMEONE IMPORTANT YO"});
 };
-// Testing
-function sendTestMessage(recipientId) {
-let messageData = {
-    "attachment": {
-        "type": "template",
-        "payload": {
-            "template_type": "generic",
-            "elements": [{
-                "title": "First card",
-                "subtitle": "Element #1 of an hscroll",
-                "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
-                "buttons": [{
-                    "type": "web_url",
-                    "url": "https://www.messenger.com",
-                    "title": "web url"
-                }, {
-                    "type": "postback",
-                    "title": "Postback",
-                    "payload": "Payload for first element in a generic bubble",
-                }],
-            }, {
-                "title": "Second card",
-                "subtitle": "Element #2 of an hscroll",
-                "image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
-                "buttons": [{
-                    "type": "postback",
-                    "title": "Postback",
-                    "payload": "Payload for second element in a generic bubble",
-                }],
-            }]
-        }
-    }
-}; 
+// Display the menu in a webview
+function showMenu(recipientId) {
+    let messageData = {
+        "buttons":
+        [{ // Add Button
+            "type":"postback",
+            "title":"Add",
+            "payload":"PAYLOAD_ADD"
+        }],
+        
+        [{ // Remove Item
+            "type":"postback",
+            "title":"Remove",
+            "payload":"PAYLOAD_REMOVE"
+        }] 
+    };
 
-  sendMessage(recipientId, messageData);
-}
+    sendMessage(recipientId, messageData);
+};
+
+function showAddMenu(recipientId) {
+    sendMessage(recipientId, {text: "SHOW ADD MENU"});
+};
+
+function showRemoveMenu(recipientId) {
+    sendMessage(recipientId, {text: "SHOW REMOVE MENU"});
+};
 
 // generic function sending messages
 function sendMessage(recipientId, message) {  
@@ -134,4 +145,71 @@ function sendMessage(recipientId, message) {
         }
     });
 };
+
+
+function kittenMessage(recipientId, text) {
+
+    text = text || "";
+    var values = text.split(' ');
+
+    if (values.length === 3 && values[0] === 'kitten') {
+        if (Number(values[1]) > 0 && Number(values[2]) > 0) {
+
+            var imageUrl = "https://placekitten.com/" + Number(values[1]) + "/" + Number(values[2]);
+
+            message = {
+                "attachment": {
+                    "type": "template",
+                    "payload": {
+                        "template_type": "generic",
+                        "elements": [{
+                            "title": "Kitten",
+                            "subtitle": "Cute kitten picture",
+                            "image_url": imageUrl ,
+                            "buttons": [{
+                                "type": "web_url",
+                                "url": imageUrl,
+                                "title": "Show kitten"
+                                }, {
+                                "type": "postback",
+                                "title": "I like this",
+                                "payload": "User " + recipientId + " likes kitten " + imageUrl,
+                            }]
+                        }]
+                    }
+                }
+            };
+
+            sendMessage(recipientId, message);
+
+            return true;
+        }
+    }
+
+    return false;
+
+};
+
+
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*---------------------------------------------- Connecting to DB        --------------------------------------------- */
+/*----------------------------------------------                         --------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+
+/*
+pg.defaults.ssl = true;
+pg.connect(process.env.DATABASE_URL, function(err, client) {
+  if (err) throw err;
+  console.log('Connected to postgres! Getting schemas...');
+
+  client
+    .query('SELECT table_schema,table_name FROM information_schema.tables;')
+    .on('row', function(row) {
+      console.log(JSON.stringify(row));
+    });
+});
+
+*/
 

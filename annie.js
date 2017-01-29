@@ -4,8 +4,18 @@ exports.getMedications = function(userId) {
     // Connect to database and extract medictions
     
     // Used for testing
+<<<<<<< HEAD
     var medJson = {"name":"Weed", "dosage":"1g", "timePerDay":"20:00"};
     return getTimeForMedication(medJson);
+=======
+    var medJson = {name:"Weed", dosage:"1g", timePerDay:"20:00"};
+    return getTimeForMedication(medJson);
+}
+
+exports.getDummyJson = function(userId){
+    var medJson = {name:"rolf", dosage:"1g"};
+    return medJson;
+>>>>>>> 15db65b1e75b9922e91d1828d0844e12c636e0aa
 }
 
 function getTimeForMedication(medicationSchedule) {
