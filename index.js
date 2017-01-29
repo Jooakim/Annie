@@ -1,3 +1,4 @@
+'use strict'
 var express = require('express');  
 var bodyParser = require('body-parser');  
 var request = require('request');  
@@ -40,12 +41,17 @@ app.post('/webhook', function (req, res) {
     for (i = 0; i < events.length; i++) {
         let event = events[i];
         let sender = event.sender.id;
-
+        let splitMessage = events;
+        
         // Check if a message and text string exist
         if (event.message && event.message.text) {
             switch(event.message.text) {
-                case "menu":
-                    showMenu(sender);
+                case "init":
+                    if(splitMessage > 1){
+                        addUser(sender, splitMessage[1]);
+                    } else {
+                        sendMessage(sender, {text: "Initialize name: init <name>"});
+                    }
                     break;
                 case 'showMed':
                     showUser(sender);
@@ -57,27 +63,34 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: annie.getMedications(0)});
                     break;
                 case "!add":
-                    addMed(sender);
+                    if(splitMessage.length > 1){
+                        addMed(sender, splitMessage[1], splitMessage[2]);
+                    } else {
+                        sendMessage(sender, {text: "Input medicine <add> <medicineName> <dosage>"});
+                    }
                     break;
                 case "!remove":
-                    //removeMed(sender);
+                    removeMed(sender);
                     break;
                 case "!status":
-                    //statMed(sender);
+                    statMed(sender);
                     break;
                 case "!ice":
-                    //Emergency(sender);
+                    emergency(sender);
                     break;
                 case "simon":
                     var output = annie.getDummyJson(0);
                     sendMessage(sender, {text: output.name});
                     break;
+                case "addMed":
+                    addNewMedication(sender, "test hallo olla");
+                    break;
                 default:
                     sendMessage(sender, {text: "Echo: " + event.message.text});
                     break;
             }
-        } else if (event.payload) {
-            switch(event.payload) {
+        } else if (event.postback) {
+            switch(event.postback) {
                 case "PAYLOAD_ADD":
                     showAddMenu(sender);
                     break;
@@ -90,7 +103,7 @@ app.post('/webhook', function (req, res) {
     res.sendStatus(200);
 });
 
-function addMed(recipientId){
+function addUser(recipientId, name){
     //sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
     pg.defaults.ssl = true;
     pg.connect(process.env.DATABASE_URL, function(err, client) {
@@ -98,7 +111,24 @@ function addMed(recipientId){
         console.log('Connected to postgres! Getting schemas...');
 
         client
-            .query('INSERT INTO users (userid, name) VALUES($1, $2)', [recipientId, 'Goran'])
+            .query('INSERT INTO users (userid, name) VALUES($1, $2)', [recipientId, name])
+            .on('row', function(row) {
+                sendMessage(recipient, {text: "Added user " + name + " to database"})
+            }).on('error', function(err){
+               sendMessage(recipientId, {text: "The user is already initialized"}) 
+            });
+    });
+};
+
+function addMed(recipientId, medicineName, dosage){
+    //sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+
+        client
+            .query('INSERT INTO usermeds (userid, name) VALUES($1, $2)', [recipientId, 'Goran'])
             .on('row', function(row) {
                 console.log(JSON.stringify(row));
             });
@@ -118,13 +148,16 @@ function showUser(recipientId){
             });
     });
 };
+
 function removeMed(recipientId){
     sendMessage(recipientId, {text: "This should list the meds, numbered, and the number chosen should be removed (after asking)"});
 };
+
 function statMed(recipientId){
     sendMessage(recipientId, {text: "This should post the stat of all Meds taken in a list, with duration left, frequency, and med name"});
 };
-function Emergency(recipientId){
+
+function emergency(recipientId){
     sendMessage(recipientId, {text: "THIS SHOULD CALL SOMEONE IMPORTANT YO"});
 };
 
@@ -136,17 +169,19 @@ function showMenu(recipientId) {
                 "type": "template",
                 "payload": {
                     "template_type": "button",
-                    "text": "",
+                    "text": "Here is the menu:",
                     "buttons": [
                     {   // Add Button
                         "type": "postback",
                         "title": "Add a prescription.",
                         "payload": "PAYLOAD_ADD",
+                        "webview_height_ratio": "compact"
                     },
                     {   // Remove Button
                         "type": "postback",
                         "title": "Remove a prescription.",
                         "payload": "PAYLOAD_REMOVE",
+                        "webview_height_ratio": "compact"
                     }],
                 }
             }
@@ -156,14 +191,14 @@ function showMenu(recipientId) {
     sendMessage(recipientId, messageData);
 };
 
-
 function showAddMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW ADD MENU"});
 };
 
 function showRemoveMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW REMOVE MENU"});
-}; 
+};
+
 
 // generic function sending messages
 function sendMessage(recipientId, message) {  
@@ -186,15 +221,12 @@ function sendMessage(recipientId, message) {
 
 
 function kittenMessage(recipientId, text) {
-
     text = text || "";
     var values = text.split(' ');
 
     if (values.length === 3 && values[0] === 'kitten') {
         if (Number(values[1]) > 0 && Number(values[2]) > 0) {
-
             var imageUrl = "https://placekitten.com/" + Number(values[1]) + "/" + Number(values[2]);
-
             message = {
                 "attachment": {
                     "type": "template",
@@ -217,9 +249,7 @@ function kittenMessage(recipientId, text) {
                     }
                 }
             };
-
             sendMessage(recipientId, message);
-
             return true;
         }
     }
@@ -227,6 +257,27 @@ function kittenMessage(recipientId, text) {
     return false;
 
 };
+
+function addNewMedication(userId, medInfo) {
+    var medInfoArr = creatMedJson(medInfo.split(" "));
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+        console.log(medInfoArr);
+
+        client
+            .query('INSERT INTO user_meds (userid, medname, dosage, timeofaction) VALUES($1, $2, $3, $4)', [recipientId, medInfoArr.name, medInfoArr.dosage, medInfoArr.timeOfAction])
+            .on('row', function(row) {
+                console.log(JSON.stringify(row));
+            });
+    });
+}
+
+
+function createMedJson(medInfo) {
+    return '{name:medInfo[0], dosage:medInfo[1], timeOfAction:medInfo[2]}';
+}
 
 
 /*-------------------------------------------------------------------------------------------------------------------- */
