@@ -72,7 +72,16 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: "Echo: " + event.message.text});
                     break;
             }
-        } 
+        } else if (event.payload) {
+            switch(event.payload) {
+                case "PAYLOAD_ADD":
+                    showAddMenu(sender);
+                    break;
+                case "PAYLOAD_REMOVE":
+                    showRemoveMenu(sender);
+                    break;
+            }
+        }
     }
     res.sendStatus(200);
 });
@@ -102,13 +111,13 @@ function showMenu(recipientId) {
                     "subtitle": "Element #1 of an hscroll",
                     "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
                     "buttons": [{
-                        "type": "web_url",
-                        "url": "https://www.messenger.com",
-                        "title": "web url"
+                        "type": "postback",
+                        "title": "Remove a prescription.",
+                        "payload": "PAYLOAD_REMOVE",
                     }, {
                         "type": "postback",
-                        "title": "Postback",
-                        "payload": "Payload for first element in a generic bubble",
+                        "title": "Add a prescription.",
+                        "payload": "PAYLOAD_ADD",
                     }],
                 }]
             }
