@@ -1,9 +1,10 @@
 var express = require('express');  
 var bodyParser = require('body-parser');  
 var request = require('request');  
+var pg = require('pq');
 var annie = require('./annie.js')
 var app = express();
-var pg = require('pq');
+
 
 //
 app.use(bodyParser.urlencoded({extended: false}));  
