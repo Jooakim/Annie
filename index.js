@@ -47,6 +47,8 @@ app.post('/webhook', function (req, res) {
                 case "menu":
                     showMenu(sender);
                     break;
+                case 'showMed':
+                    showUser(sender);
                 case "help":
                     sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
                     break;
@@ -54,7 +56,7 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: annie.getMedications(0)});
                     break;
                 case "!add":
-                    //addMed(sender);
+                    addMed(sender);
                     break;
                 case "!remove":
                     //removeMed(sender);
@@ -79,7 +81,32 @@ app.post('/webhook', function (req, res) {
 });
 
 function addMed(recipientId){
-    sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
+    //sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+
+        client
+            .query('INSERT INTO users (userid, name) VALUES($1, $2)', [recipientId, 'Goran'])
+            .on('row', function(row) {
+                console.log(JSON.stringify(row));
+            });
+    });
+};
+
+function showUser(recipientId){
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+
+        client
+            .query('SELECT name FROM users WHERE userid = ' + recipientId + ';')
+            .on('row', function(row) {
+                sendMessage(recipientId, row);
+            });
+    });
 };
 function removeMed(recipientId){
     sendMessage(recipientId, {text: "This should list the meds, numbered, and the number chosen should be removed (after asking)"});
@@ -94,27 +121,27 @@ function Emergency(recipientId){
 // Display the menu in a webview
 function showMenu(recipientId) {
     let messageData = {
-        text:"test"
-        // "attachment": {
-        //     "type": "template",
-        //     "payload": {
-        //         "template_type": "generic",
-        //         "elements": [{
-        //             "buttons": [{
-        //                 // Add Button
-        //                 "type":"postback",
-        //                 "title":"Add",
-        //                 "payload":"PAYLOAD_ADD"
-        //             },
-        //             {   // Remove Item
-        //                 "type":"postback",
-        //                 "title":"Remove",
-        //                 "payload":"PAYLOAD_REMOVE"
-        //             }]
-        //         }]
-        //     }
-        // }
-    };
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "generic",
+                "elements": [{
+                    "title": "First card",
+                    "subtitle": "Element #1 of an hscroll",
+                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
+                    "buttons": [{
+                        "type": "web_url",
+                        "url": "https://www.messenger.com",
+                        "title": "web url"
+                    }, {
+                        "type": "postback",
+                        "title": "Postback",
+                        "payload": "Payload for first element in a generic bubble",
+                    }],
+                }]
+            }
+        }
+    }
 
     sendMessage(recipientId, messageData);
 };
@@ -223,7 +250,7 @@ function kittenMessage(recipientId, text) {
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 
-pg.defaults.ssl = true;
+/*pg.defaults.ssl = true;
 pg.connect(process.env.DATABASE_URL, function(err, client) {
   if (err) throw err;
   console.log('Connected to postgres! Getting schemas...');
@@ -233,5 +260,4 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
     .on('row', function(row) {
       console.log(JSON.stringify(row));
     });
-});
-
+});*/
