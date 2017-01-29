@@ -85,7 +85,7 @@ function addMed(recipientId){
         console.log('Connected to postgres! Getting schemas...');
 
         client
-            .query('INSERT INTO users VALUES (' + recipientId + ', Ralf)')
+            .query('INSERT INTO users (userid, name) VALUES($1, $2)', [recipientId, 'Goran'])
             .on('row', function(row) {
                 console.log(JSON.stringify(row));
             });
