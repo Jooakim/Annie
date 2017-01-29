@@ -8,6 +8,13 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());  
 app.listen((process.env.PORT || 3000));
 
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*---------------------------------------------- Facebook webhook        --------------------------------------------- */
+/*----------------------------------------------                         --------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+
 // Server frontpage
 app.get('/', function (req, res) {  
     res.send('Welcome to our bot');
@@ -94,6 +101,29 @@ function sendTestMessage(recipientId) {
   sendMessage(recipientId, messageData);
 }
 
+
+function showHelpMessage(recipientId)
+{
+    var msg = "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)";
+    request({
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
+        method: 'POST',
+        json:{
+            recipient: {id: recipientId},
+            message: msg,
+        }
+    },
+    function(error,response,body){
+        if(error){
+            console.log('Error sending message: ', error);
+        }else if (response.body.error){
+            console.log('Error: ', response.body.error);
+        }
+        }
+    });
+};
+
 // generic function sending messages
 function sendMessage(recipientId, message) {  
     request({
@@ -112,6 +142,7 @@ function sendMessage(recipientId, message) {
         }
     });
 };
+
 
 function kittenMessage(recipientId, text) {
 
@@ -155,3 +186,27 @@ function kittenMessage(recipientId, text) {
     return false;
 
 };
+
+
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*---------------------------------------------- Connecting to DB        --------------------------------------------- */
+/*----------------------------------------------                         --------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
+
+/*
+pg.defaults.ssl = true;
+pg.connect(process.env.DATABASE_URL, function(err, client) {
+  if (err) throw err;
+  console.log('Connected to postgres! Getting schemas...');
+
+  client
+    .query('SELECT table_schema,table_name FROM information_schema.tables;')
+    .on('row', function(row) {
+      console.log(JSON.stringify(row));
+    });
+});
+
+*/
+
