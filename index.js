@@ -39,11 +39,11 @@ app.post('/webhook', function (req, res) {
     for (i = 0; i < events.length; i++) {
         let event = events[i];
         let sender = event.sender.id;
-        let splitMessage = events;
+        let splitMessage = event.message.text.split();
         
         // Check if a message and text string exist
         if (event.message && event.message.text) {
-            switch(event.message.text) {
+            switch(splitMessage[0]) {
                 case "init":
                     if(splitMessage.length > 1){
                         addUser(sender, splitMessage[1]);
