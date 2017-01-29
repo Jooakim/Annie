@@ -101,8 +101,7 @@ function Emergency(recipientId){
 // Display the menu in a webview
 function showMenu(recipientId) {
     let messageData = {
-        "attachment": {
-            "buttons":
+        "buttons":
             [{ // Add Button
                 "type":"postback",
                 "title":"Add",
@@ -113,7 +112,6 @@ function showMenu(recipientId) {
                 "title":"Remove",
                 "payload":"PAYLOAD_REMOVE"
             }]
-        } 
     };
 
     sendMessage(recipientId, messageData);
