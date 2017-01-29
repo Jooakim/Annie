@@ -1,10 +1,10 @@
+'use strict'
 var express = require('express');  
 var bodyParser = require('body-parser');  
 var request = require('request');  
 var pg = require('pg');
 var annie = require('./annie.js')
 var app = express();
-
 
 //heartless anners
 app.use(bodyParser.urlencoded({extended: false}));  
@@ -14,8 +14,8 @@ app.listen((process.env.PORT || 3000));
 
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
-/*---------------------------------------------- Facebook webhook        --------------------------------------------- */
-/*----------------------------------------------                         --------------------------------------------- */
+/*---------------------------------------------- Facebook webhook----------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 
@@ -40,14 +40,19 @@ app.post('/webhook', function (req, res) {
     for (i = 0; i < events.length; i++) {
         let event = events[i];
         let sender = event.sender.id;
-
+        let splitMessage = events;
+        
         // Check if a message and text string exist
         if (event.message && event.message.text) {
             switch(event.message.text) {
-                case "menu":
-                    showMenu(sender);
+                case "init":
+                    if(splitMessage.length > 1){
+                        addUser(sender, splitMessage[1]);
+                    } else {
+                        sendMessage(sender, {text: "Initialize name: init <name>"});
+                    }
                     break;
-                case 'showMed':
+                case "showMed":
                     showUser(sender);
                     break;
                 case "help":
@@ -57,31 +62,44 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: annie.getMedications(0)});
                     break;
                 case "!add":
-                    addMed(sender);
+                    if(splitMessage.length > 1){
+                        addMed(sender, splitMessage[1], splitMessage[2]);
+                    } else {
+                        sendMessage(sender, {text: "Input medicine <add> <medicineName> <dosage>"});
+                    }
                     break;
                 case "!remove":
-                    //removeMed(sender);
+                    removeMed(sender);
                     break;
                 case "!status":
-                    //statMed(sender);
+                    statMed(sender);
                     break;
                 case "!ice":
-                    //Emergency(sender);
+                    emergency(sender);
                     break;
-                case "simon":
-                    var output = annie.getDummyJson(0);
-                    sendMessage(sender, {text: output.name});
+                case "addMed":
+                    addNewMedication(sender, "test hallo olla");
                     break;
                 default:
                     sendMessage(sender, {text: "Echo: " + event.message.text});
                     break;
             }
-        } 
+        } /*else if (event.postback) {
+            // Else check if a postback has been found (as a result of clicking a button)
+            switch(event.postback) {
+                case "PAYLOAD_ADD":
+                    showAddMenu(sender);
+                    break;
+                case "PAYLOAD_REMOVE":
+                    showRemoveMenu(sender);
+                    break;
+            }
+        }*/
     }
     res.sendStatus(200);
 });
 
-function addMed(recipientId){
+function addUser(recipientId, name){
     //sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
     pg.defaults.ssl = true;
     pg.connect(process.env.DATABASE_URL, function(err, client) {
@@ -89,7 +107,24 @@ function addMed(recipientId){
         console.log('Connected to postgres! Getting schemas...');
 
         client
-            .query('INSERT INTO users (userid, name) VALUES($1, $2)', [recipientId, 'Goran'])
+            .query('INSERT INTO users (userid, name) VALUES($1, $2)', [recipientId, name])
+            .on('row', function(row) {
+                sendMessage(recipient, {text: "Added user " + name + " to database"})
+            }).on('error', function(err){
+               sendMessage(recipientId, {text: "The user is already initialized"}) 
+            });
+    });
+};
+
+function addMed(recipientId, medicineName, dosage){
+    //sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+
+        client
+            .query('INSERT INTO usermeds (userid, name) VALUES($1, $2)', [recipientId, 'Goran'])
             .on('row', function(row) {
                 console.log(JSON.stringify(row));
             });
@@ -109,44 +144,47 @@ function showUser(recipientId){
             });
     });
 };
+
 function removeMed(recipientId){
     sendMessage(recipientId, {text: "This should list the meds, numbered, and the number chosen should be removed (after asking)"});
 };
+
 function statMed(recipientId){
     sendMessage(recipientId, {text: "This should post the stat of all Meds taken in a list, with duration left, frequency, and med name"});
 };
-function Emergency(recipientId){
+
+function emergency(recipientId){
     sendMessage(recipientId, {text: "THIS SHOULD CALL SOMEONE IMPORTANT YO"});
 };
 
-// Display the menu in a webview
+// Display the main menu
 function showMenu(recipientId) {
     let messageData = {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "generic",
-                "elements": [{
-                    "title": "First card",
-                    "subtitle": "Element #1 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
-                    "buttons": [{
-                        "type": "web_url",
-                        "url": "https://www.messenger.com",
-                        "title": "web url"
-                    }, {
+        "message": {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "button",
+                    // The text header
+                    "text": "Here is the menu:",
+                    "buttons": [
+                    {   // Add Button
                         "type": "postback",
-                        "title": "Postback",
-                        "payload": "Payload for first element in a generic bubble",
-                    }],
-                }]
+                        "title": "Add a prescription.",
+                        "payload": "PAYLOAD_ADD"
+                    },
+                    {   // Remove Button
+                        "type": "postback",
+                        "title": "Remove a prescription.",
+                        "payload": "PAYLOAD_REMOVE"
+                    }]
+                }
             }
         }
-    }
+    };
 
     sendMessage(recipientId, messageData);
 };
-
 
 function showAddMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW ADD MENU"});
@@ -154,9 +192,10 @@ function showAddMenu(recipientId) {
 
 function showRemoveMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW REMOVE MENU"});
-}; 
+};
 
-// generic function sending messages
+
+// Generic function to send messages to a recipient
 function sendMessage(recipientId, message) {  
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
@@ -175,17 +214,14 @@ function sendMessage(recipientId, message) {
     });
 };
 
-
+// Test function to display an image and buttons
 function kittenMessage(recipientId, text) {
-
     text = text || "";
     var values = text.split(' ');
 
     if (values.length === 3 && values[0] === 'kitten') {
         if (Number(values[1]) > 0 && Number(values[2]) > 0) {
-
             var imageUrl = "https://placekitten.com/" + Number(values[1]) + "/" + Number(values[2]);
-
             message = {
                 "attachment": {
                     "type": "template",
@@ -208,22 +244,39 @@ function kittenMessage(recipientId, text) {
                     }
                 }
             };
-
             sendMessage(recipientId, message);
-
             return true;
         }
     }
-
     return false;
-
 };
 
+function addNewMedication(userId, medInfo) {
+    var medInfoArr = creatMedJson(medInfo.split(" "));
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+        console.log(medInfoArr);
+
+        client
+            .query('INSERT INTO user_meds (userid, medname, dosage, timeofaction) VALUES($1, $2, $3, $4)', [recipientId, medInfoArr.name, medInfoArr.dosage, medInfoArr.timeOfAction])
+            .on('row', function(row) {
+                console.log(JSON.stringify(row));
+            });
+    });
+}
+
+
+function createMedJson(medInfo) {
+    return '{name:medInfo[0], dosage:medInfo[1], timeOfAction:medInfo[2]}';
+}
+
 
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
-/*---------------------------------------------- Connecting to DB        --------------------------------------------- */
-/*----------------------------------------------                         --------------------------------------------- */
+/*---------------------------------------------- Connecting to DB----------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 
