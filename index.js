@@ -43,9 +43,8 @@ app.post('/webhook', function (req, res) {
                     showMenu(sender);
                     break;
                 case "help":
-                    sendMessage(sender, {text: "--SENDING COMMAND LIST--"});
                     sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
-                     break;
+                    break;
                 case "medsTest":
                     sendMessage(sender, {text: annie.getMedications(0)});
                     break;
@@ -102,18 +101,19 @@ function Emergency(recipientId){
 // Display the menu in a webview
 function showMenu(recipientId) {
     let messageData = {
-        "buttons":
-        [{ // Add Button
-            "type":"postback",
-            "title":"Add",
-            "payload":"PAYLOAD_ADD"
-        }],
-        
-        [{ // Remove Item
-            "type":"postback",
-            "title":"Remove",
-            "payload":"PAYLOAD_REMOVE"
-        }] 
+        "attachment": {
+            "buttons":
+            [{ // Add Button
+                "type":"postback",
+                "title":"Add",
+                "payload":"PAYLOAD_ADD"
+            },
+            { // Remove Item
+                "type":"postback",
+                "title":"Remove",
+                "payload":"PAYLOAD_REMOVE"
+            }]
+        } 
     };
 
     sendMessage(recipientId, messageData);
