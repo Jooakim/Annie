@@ -36,6 +36,7 @@ app.get('/webhook', function (req, res) {
 // Handle user messages
 app.post('/webhook', function (req, res) {  
     var events = req.body.entry[0].messaging;
+    console.log(events);
     for (i = 0; i < events.length; i++) {
         let event = events[i];
         let sender = event.sender.id;
@@ -48,6 +49,7 @@ app.post('/webhook', function (req, res) {
                     break;
                 case 'showMed':
                     showUser(sender);
+                    break;
                 case "help":
                     sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
                     break;
@@ -112,7 +114,7 @@ function showUser(recipientId){
         client
             .query('SELECT name FROM users WHERE userid = ' + recipientId + ';')
             .on('row', function(row) {
-                sendMessage(recipientId, row);
+                sendMessage(recipientId, {text: row.name});
             });
     });
 };
