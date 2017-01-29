@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var request = require('request');  
 var annie = require('./annie.js')
 var app = express();
+var pg = require('pq');
 
 app.use(bodyParser.urlencoded({extended: false}));  
 app.use(bodyParser.json());  
