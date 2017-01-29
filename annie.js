@@ -7,8 +7,6 @@ exports.getMedications = function(userId) {
     // Used for testing
     var medJson = {"name":"Weed", "dosage":"1g", "timePerDay":"20:00"};
     return getTimeForMedication(medJson);
-    var medJson = {name:"Weed", dosage:"1g", timeOfAction:"20:00"};
-    return getTimeForMedication(medJson);
 }
 
 exports.getDummyJson = function(userId){
