@@ -104,7 +104,7 @@ function showUser(recipientId){
         client
             .query('SELECT name FROM users WHERE userid = ' + recipientId + ';')
             .on('row', function(row) {
-                sendMessage(recipientId, row.name);
+                sendMessage(recipientId, {text: row.name});
             });
     });
 };
@@ -156,15 +156,14 @@ function showRemoveMenu(recipientId) {
 }; 
 
 // generic function sending messages
-function sendMessage(recipientId, message) {
-    var fuling = '' + message;  
+function sendMessage(recipientId, message) {  
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
         qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
         method: 'POST',
         json: {
             recipient: {id: recipientId},
-            message: fuling,
+            message: message,
         }
     }, function(error, response, body) {
         if (error) {
