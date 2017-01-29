@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var request = require('request');  
 var annie = require('./annie.js')
 var app = express();
-//var pg = require('pq');
+var pg = require('pq');
 
 //
 app.use(bodyParser.urlencoded({extended: false}));  
@@ -88,7 +88,7 @@ app.post('/webhook', function (req, res) {
     }
     res.sendStatus(200);
 });
-/*
+
 function addMed(recipientId){
     sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
 };
@@ -127,7 +127,7 @@ function showAddMenu(recipientId) {
 
 function showRemoveMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW REMOVE MENU"});
-}; */
+}; 
 /*
 function showHelpMessage(recipientId)
 {
