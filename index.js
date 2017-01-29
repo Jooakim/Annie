@@ -47,7 +47,7 @@ app.post('/webhook', function (req, res) {
         if (event.message && event.message.text) {
             switch(event.message.text) {
                 case "init":
-                if(splitMessage > 1){
+                if(splitMessage.length > 1){
                     addUser(sender, splitMessage[1]);
                 } else {
                     sendMessage(sender, {text: "Initialize name: init <name>"});
