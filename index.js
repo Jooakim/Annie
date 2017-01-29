@@ -111,10 +111,10 @@ function showMenu(recipientId) {
 function showAddMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW ADD MENU"});
 };
-
+*/
 function showRemoveMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW REMOVE MENU"});
-}; */
+}; 
 /*
 function showHelpMessage(recipientId)
 {
