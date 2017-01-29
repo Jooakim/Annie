@@ -40,10 +40,7 @@ app.post('/webhook', function (req, res) {
         if (event.message && event.message.text) {
             switch(event.message.text) {
                 case "menu":
-                    sendMessage(sender, {text: "--DISPLAY MENU--"});
-                    break;
-                case "test":
-                    sendTestMessage(sender);
+                    displayMenu(sender);
                     break;
                 case "help":
                     sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
@@ -56,7 +53,18 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: output.name});
                     break;
                 default:
-                sendMessage(sender, {text: "Echo: " + event.message.text});
+                    sendMessage(sender, {text: "Echo: " + event.message.text});
+                    break;
+            }
+        } else if (event.postback) {
+            switch(event.postback) {
+                case "PAYLOAD_ADD":
+                    fnAdd(sender);
+                    break;
+                case "PAYLOAD_REMOVE":
+                    fnRemove(sender);
+                    break;
+                default:
                     break;
             }
         }
@@ -64,65 +72,33 @@ app.post('/webhook', function (req, res) {
     res.sendStatus(200);
 });
 
-// Testing
-function sendTestMessage(recipientId) {
+// Display the menu in a webview
+function showMenu(recipientId) {
     let messageData = {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "generic",
-                "elements": [{
-                    "title": "First card",
-                    "subtitle": "Element #1 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
-                    "buttons": [{
-                        "type": "web_url",
-                        "url": "https://www.messenger.com",
-                        "title": "web url"
-                    }, {
-                        "type": "postback",
-                        "title": "Postback",
-                        "payload": "Payload for first element in a generic bubble",
-                    }],
-                }, {
-                    "title": "Second card",
-                    "subtitle": "Element #2 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "Postback",
-                        "payload": "Payload for second element in a generic bubble",
-                    }],
-                }]
-            }
-        }
-    }; 
+        "buttons":
+        [{ // Add Button
+            "type":"postback",
+            "title":"Add",
+            "payload":"PAYLOAD_ADD"
+        }],
+        
+        [{ // Remove Item
+            "type":"postback",
+            "title":"Remove",
+            "payload":"PAYLOAD_REMOVE"
+        }] 
+    };
 
-  sendMessage(recipientId, messageData);
+    sendMessage(recipientId, messageData);
 }
 
+function showAddMenu(recipientId) {
+    sendMessage(recipientId, {text: "SHOW ADD MENU"});
+}
 
-function showHelpMessage(recipientId)
-{
-    var msg = "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)";
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
-        method: 'POST',
-        json:{
-            recipient: {id: recipientId},
-            message: msg,
-        }
-    },
-    function(error,response,body){
-        if(error){
-            console.log('Error sending message: ', error);
-        }else if (response.body.error){
-            console.log('Error: ', response.body.error);
-        }
-        }
-    });
-};
+function showRemoveMenu(recipientId) {
+    sendMessage(recipientId, {text: "SHOW REMOVE MENU"});
+}
 
 // generic function sending messages
 function sendMessage(recipientId, message) {  
