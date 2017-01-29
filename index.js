@@ -127,7 +127,9 @@ function showDb(){
         client
             .query('SELECT * FROM users, user_meds, meds;')
             .on('row', function(row) {
-                console.log(JSON.stringify(row));
+                console.log(row);
+            }).on('error', function(err){
+                console.log("Error in select from all databases");
             });
     });
 };
