@@ -5,6 +5,7 @@ var request = require('request');
 var annie = require('./annie.js')
 var app = express();
 
+//
 app.use(bodyParser.urlencoded({extended: false}));  
 app.use(bodyParser.json());  
 app.listen((process.env.PORT || 3000));
@@ -125,6 +126,30 @@ function showAddMenu(recipientId) {
 function showRemoveMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW REMOVE MENU"});
 };
+
+/*
+function showHelpMessage(recipientId)
+{
+    var msg = "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)";
+    request({
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
+        method: 'POST',
+        json:{
+            recipient: {id: recipientId},
+            message: msg,
+        }
+    },
+    function(error,response,body){
+        if(error){
+            console.log('Error sending message: ', error);
+        }else if (response.body.error){
+            console.log('Error: ', response.body.error);
+        }
+        }
+    });
+};
+*/
 
 // generic function sending messages
 function sendMessage(recipientId, message) {  
