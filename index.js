@@ -93,7 +93,6 @@ function Emergency(recipientId){
 // Display the menu in a webview
 function showMenu(recipientId) {
     let messageData = {
-        text:"test"
         "attachment": {
             "type": "template",
             "payload": {
