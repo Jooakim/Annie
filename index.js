@@ -88,6 +88,7 @@ app.post('/webhook', function (req, res) {
     }
     res.sendStatus(200);
 });
+/*
 function addMed(recipientId){
     sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
 };
@@ -126,7 +127,7 @@ function showAddMenu(recipientId) {
 
 function showRemoveMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW REMOVE MENU"});
-};
+}; */
 /*
 function showHelpMessage(recipientId)
 {
