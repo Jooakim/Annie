@@ -98,6 +98,9 @@ function showMenu(recipientId) {
             "payload": {
                 "template_type": "generic",
                 "elements": [{
+                    "title": "Kitten",
+                    "subtitle": "Cute kitten picture",
+                    "image_url": imageUrl,
                     "buttons": [{
                         "type": "postback",
                         "title": "Add",
