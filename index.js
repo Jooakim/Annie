@@ -6,8 +6,6 @@ var pg = require('pg');
 var annie = require('./annie.js')
 var app = express();
 
-
-//
 app.use(bodyParser.urlencoded({extended: false}));  
 app.use(bodyParser.json());  
 app.listen((process.env.PORT || 3000));
@@ -15,8 +13,8 @@ app.listen((process.env.PORT || 3000));
 
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
-/*---------------------------------------------- Facebook webhook        --------------------------------------------- */
-/*----------------------------------------------                         --------------------------------------------- */
+/*---------------------------------------------- Facebook webhook----------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 
@@ -53,7 +51,7 @@ app.post('/webhook', function (req, res) {
                         sendMessage(sender, {text: "Initialize name: init <name>"});
                     }
                     break;
-                case 'showMed':
+                case "showMed":
                     showUser(sender);
                     break;
                 case "help":
@@ -90,6 +88,7 @@ app.post('/webhook', function (req, res) {
                     break;
             }
         } else if (event.postback) {
+            // Else check if a postback has been found (as a result of clicking a button)
             switch(event.postback) {
                 case "PAYLOAD_ADD":
                     showAddMenu(sender);
@@ -161,7 +160,7 @@ function emergency(recipientId){
     sendMessage(recipientId, {text: "THIS SHOULD CALL SOMEONE IMPORTANT YO"});
 };
 
-// Display the menu in a webview
+// Display the main menu
 function showMenu(recipientId) {
     let messageData = {
         "message": {
@@ -169,19 +168,18 @@ function showMenu(recipientId) {
                 "type": "template",
                 "payload": {
                     "template_type": "button",
+                    // The text header
                     "text": "Here is the menu:",
                     "buttons": [
                     {   // Add Button
                         "type": "postback",
                         "title": "Add a prescription.",
-                        "payload": "PAYLOAD_ADD",
-                        "webview_height_ratio": "compact"
+                        "payload": "PAYLOAD_ADD"
                     },
                     {   // Remove Button
                         "type": "postback",
                         "title": "Remove a prescription.",
-                        "payload": "PAYLOAD_REMOVE",
-                        "webview_height_ratio": "compact"
+                        "payload": "PAYLOAD_REMOVE"
                     }],
                 }
             }
@@ -200,7 +198,7 @@ function showRemoveMenu(recipientId) {
 };
 
 
-// generic function sending messages
+// Generic function to send messages to a recipient
 function sendMessage(recipientId, message) {  
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
@@ -219,7 +217,7 @@ function sendMessage(recipientId, message) {
     });
 };
 
-
+// Test function to display an image and buttons
 function kittenMessage(recipientId, text) {
     text = text || "";
     var values = text.split(' ');
@@ -253,9 +251,7 @@ function kittenMessage(recipientId, text) {
             return true;
         }
     }
-
     return false;
-
 };
 
 function addNewMedication(userId, medInfo) {
@@ -282,8 +278,8 @@ function createMedJson(medInfo) {
 
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
-/*---------------------------------------------- Connecting to DB        --------------------------------------------- */
-/*----------------------------------------------                         --------------------------------------------- */
+/*---------------------------------------------- Connecting to DB----------------------------------------------------- */
+/*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 
