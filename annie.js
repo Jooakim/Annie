@@ -1,21 +1,19 @@
 var exports = module.exports = {};
+const TABLE_NAME;
 
 exports.getMedications = function(userId) {
     // Connect to database and extract medictions
     
     // Used for testing
-<<<<<<< HEAD
     var medJson = {"name":"Weed", "dosage":"1g", "timePerDay":"20:00"};
     return getTimeForMedication(medJson);
-=======
-    var medJson = {name:"Weed", dosage:"1g", timePerDay:"20:00"};
+    var medJson = {name:"Weed", dosage:"1g", timeOfAction:"20:00"};
     return getTimeForMedication(medJson);
 }
 
 exports.getDummyJson = function(userId){
     var medJson = {name:"rolf", dosage:"1g"};
     return medJson;
->>>>>>> 15db65b1e75b9922e91d1828d0844e12c636e0aa
 }
 
 function getTimeForMedication(medicationSchedule) {
@@ -25,8 +23,8 @@ function getTimeForMedication(medicationSchedule) {
     var currentMinute = date.getMinutes();
     var timeToNotify = false;
 
-    if (medicationSchedule.timePerDay != "") {
-        var tmpTime = medicationSchedule.timePerDay.split(":");
+    if (medicationSchedule.timeOfAction != "") {
+        var tmpTime = medicationSchedule.timeOfAction.split(":");
         var timeInHours = parseInt(tmpTime[0]) - currentHour;
         var timeInMinutes = parseInt(tmpTime[1]) - currentMinute;
         if (timeInMinutes < 0) {
@@ -57,5 +55,18 @@ function createScheduleResponse(medicationSchedule, timeToNextMedication) {
    }
    return message;
 
+}
+
+
+function addNewMedication(userId, medInfo) {
+    var query = "INSERT INTO " + TABLE_NAME + "(userId, jsonMed) VALUES ($1, $2);";
+    var medInfoArr = creatMedJson(medInfo.split(" "));
+
+    client.query(query,[userId, medInfoArr]);
+}
+
+
+function createMedJson(medInfo) {
+    return {name:medInfo[0], dosage:medInfo[1], timeOfAction:medInfo[2]};
 }
 
