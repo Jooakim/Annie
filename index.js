@@ -131,27 +131,27 @@ function Emergency(recipientId){
 // Display the menu in a webview
 function showMenu(recipientId) {
     let messageData = {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "generic",
-                "elements": [{
-                    "title": "First card",
-                    "subtitle": "Element #1 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "Remove a prescription.",
-                        "payload": "PAYLOAD_REMOVE",
-                    }, {
+        "message": {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "button",
+                    "text": "",
+                    "buttons": [
+                    {   // Add Button
                         "type": "postback",
                         "title": "Add a prescription.",
                         "payload": "PAYLOAD_ADD",
+                    },
+                    {   // Remove Button
+                        "type": "postback",
+                        "title": "Remove a prescription.",
+                        "payload": "PAYLOAD_REMOVE",
                     }],
-                }]
+                }
             }
         }
-    }
+    };
 
     sendMessage(recipientId, messageData);
 };
