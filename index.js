@@ -94,25 +94,25 @@ function Emergency(recipientId){
 function showMenu(recipientId) {
     let messageData = {
         text:"test"
-        // "attachment": {
-        //     "type": "template",
-        //     "payload": {
-        //         "template_type": "generic",
-        //         "elements": [{
-        //             "buttons": [{
-        //                 // Add Button
-        //                 "type":"postback",
-        //                 "title":"Add",
-        //                 "payload":"PAYLOAD_ADD"
-        //             },
-        //             {   // Remove Item
-        //                 "type":"postback",
-        //                 "title":"Remove",
-        //                 "payload":"PAYLOAD_REMOVE"
-        //             }]
-        //         }]
-        //     }
-        // }
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "generic",
+                "elements": [{
+                    "buttons": [{
+                        // Add Button
+                        "type":"postback",
+                        "title":"Add",
+                        "payload":"PAYLOAD_ADD"
+                    },
+                    {   // Remove Item
+                        "type":"postback",
+                        "title":"Remove",
+                        "payload":"PAYLOAD_REMOVE"
+                    }]
+                }]
+            }
+        }
     };
 
     sendMessage(recipientId, messageData);
