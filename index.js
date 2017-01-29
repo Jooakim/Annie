@@ -48,6 +48,7 @@ app.post('/webhook', function (req, res) {
                     break;
                 case 'showMed':
                     showUser(sender);
+                    break;
                 case "help":
                     sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
                     break;
@@ -103,7 +104,7 @@ function showUser(recipientId){
         client
             .query('SELECT name FROM users WHERE userid = ' + recipientId + ';')
             .on('row', function(row) {
-                sendMessage(recipientId, row);
+                console.log(row);
             });
     });
 };
