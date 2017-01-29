@@ -31,31 +31,26 @@ app.post('/webhook', function (req, res) {
 
         // Check if a message and text string exist
         if (event.message && event.message.text) {
-            if (!kittenMessage(event.sender.id, event.message.text)) {
-        sendMessage(event.sender.id, {text: "Echo: " + event.message.text});
-            }
-            else {
-                switch(event.message.text) {
-                    case "menu":
-                        sendMessage(sender, {text: "--DISPLAY MENU--"});
-                        break;
-                    case "test":
-                        sendTestMessage(sender);
-                        break;
-                    case "help":
-                        sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
-                        break;
-                    case "medsTest":
-                        sendMessage(sender, {text: annie.getMedications(0)});
-                        break;
-                    case "simon":
-                        var output = annie.getDummyJson(0);
-                        sendMessage(sender, {text: output.name});
-                        break;
-                    default:
-                    sendMessage(sender, {text: "Echo: " + event.message.text});
-                        break;
-                }
+            switch(event.message.text) {
+                case "menu":
+                    sendMessage(sender, {text: "--DISPLAY MENU--"});
+                    break;
+                case "test":
+                    sendTestMessage(sender);
+                    break;
+                case "help":
+                    sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
+                    break;
+                case "medsTest":
+                    sendMessage(sender, {text: annie.getMedications(0)});
+                    break;
+                case "simon":
+                    var output = annie.getDummyJson(0);
+                    sendMessage(sender, {text: output.name});
+                    break;
+                default:
+                sendMessage(sender, {text: "Echo: " + event.message.text});
+                    break;
             }
         }
     }
