@@ -101,7 +101,7 @@ function sendTestMessage(recipientId) {
   sendMessage(recipientId, messageData);
 }
 
-
+/*
 function showHelpMessage(recipientId)
 {
     var msg = "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)";
@@ -123,6 +123,7 @@ function showHelpMessage(recipientId)
         }
     });
 };
+*/
 
 // generic function sending messages
 function sendMessage(recipientId, message) {  
