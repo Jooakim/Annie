@@ -77,7 +77,7 @@ app.post('/webhook', function (req, res) {
                     showAddMenu(sender);
                     break;
                 case "PAYLOAD_REMOVE":
-                    showAddMenu(sender);
+                    showRemoveMenu(sender);
                     break;
                 default:
                     break;
