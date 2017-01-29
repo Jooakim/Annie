@@ -36,6 +36,7 @@ app.get('/webhook', function (req, res) {
 // Handle user messages
 app.post('/webhook', function (req, res) {  
     var events = req.body.entry[0].messaging;
+    console.log(events);
     for (i = 0; i < events.length; i++) {
         let event = events[i];
         let sender = event.sender.id;
