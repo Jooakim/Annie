@@ -11,6 +11,18 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());  
 app.listen((process.env.PORT || 3000));
 
+pg.defaults.ssl = true;
+pg.connect(process.env.DATABASE_URL, function(err, client) {
+  if (err) throw err;
+  console.log('Connected to postgres! Getting schemas...');
+
+  client
+    .query('SELECT userid FROM user_meds;')
+    .on('row', function(row) {
+      console.log(JSON.stringify(row));
+    });
+});
+
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*---------------------------------------------- Facebook webhook        --------------------------------------------- */
@@ -209,15 +221,5 @@ function kittenMessage(recipientId, text) {
 /*----------------------------------------------                         --------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
-pg.defaults.ssl = true;
-pg.connect(process.env.DATABASE_URL, function(err, client) {
-  if (err) throw err;
-  console.log('Connected to postgres! Getting schemas...');
 
-  client
-    .query('SELECT userid FROM user_meds.tables;')
-    .on('row', function(row) {
-      console.log(JSON.stringify(row));
-    });
-});
 
