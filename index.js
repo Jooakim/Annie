@@ -42,7 +42,7 @@ app.post('/webhook', function (req, res) {
         if (event.message && event.message.text) {
             switch(event.message.text) {
                 case "menu":
-                    showMenu(sender);
+                    //showMenu(sender);
                     break;
                 case "help":
                     sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
@@ -51,19 +51,16 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: annie.getMedications(0)});
                     break;
                 case "!add":
-                    addMed(sender);
+                    //addMed(sender);
                     break;
                 case "!remove":
-                    removeMed(sender);
+                    //removeMed(sender);
                     break;
                 case "!status":
-                    statMed(sender);
+                    //statMed(sender);
                     break;
                 case "!ice":
-                    Emergency(sender);
-                    break;
-                case "medsTest":
-                    sendMessage(sender, {text: annie.getMedications(0)});
+                    //Emergency(sender);
                     break;
                 case "simon":
                     var output = annie.getDummyJson(0);
