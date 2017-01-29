@@ -104,27 +104,27 @@ function Emergency(recipientId){
 // Display the menu in a webview
 function showMenu(recipientId) {
     let messageData = {
-        text:"test"
-        // "attachment": {
-        //     "type": "template",
-        //     "payload": {
-        //         "template_type": "generic",
-        //         "elements": [{
-        //             "buttons": [{
-        //                 // Add Button
-        //                 "type":"postback",
-        //                 "title":"Add",
-        //                 "payload":"PAYLOAD_ADD"
-        //             },
-        //             {   // Remove Item
-        //                 "type":"postback",
-        //                 "title":"Remove",
-        //                 "payload":"PAYLOAD_REMOVE"
-        //             }]
-        //         }]
-        //     }
-        // }
-    };
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "generic",
+                "elements": [{
+                    "title": "First card",
+                    "subtitle": "Element #1 of an hscroll",
+                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
+                    "buttons": [{
+                        "type": "web_url",
+                        "url": "https://www.messenger.com",
+                        "title": "web url"
+                    }, {
+                        "type": "postback",
+                        "title": "Postback",
+                        "payload": "Payload for first element in a generic bubble",
+                    }],
+                }]
+            }
+        }
+    }
 
     sendMessage(recipientId, messageData);
 };
