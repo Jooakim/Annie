@@ -39,7 +39,7 @@ app.post('/webhook', function (req, res) {
     for (i = 0; i < events.length; i++) {
         let event = events[i];
         let sender = event.sender.id;
-        let splitMessage = event.message.text.split();
+        let splitMessage = event.message.text.split(' ');
         console.log("SplitMessage: " + splitMessage[0]);
         // Check if a message and text string exist
         if (event.message && event.message.text) {
