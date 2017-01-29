@@ -1,3 +1,5 @@
+var express = require('express');  
+var bodyParser = require('body-parser');  
 var request = require('request');  
 var annie = require('./annie.js')
 var app = express();
@@ -40,7 +42,7 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
                     break;
                 case "medsTest":
-                    sendMessage(sender, {text: annie.getMedications(0) + " " + req.body.entry[0].time });
+                    sendMessage(sender, {text: annie.getMedications(0)});
                     break;
                 case "simon":
                     var output = annie.getDummyJson(0);
