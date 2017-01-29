@@ -1,3 +1,4 @@
+'use strict'
 var express = require('express');  
 var bodyParser = require('body-parser');  
 var request = require('request');  
@@ -80,6 +81,9 @@ app.post('/webhook', function (req, res) {
                 case "simon":
                     var output = annie.getDummyJson(0);
                     sendMessage(sender, {text: output.name});
+                    break;
+                case "addMed":
+                    addNewMedication(sender, "test hallo olla");
                     break;
                 default:
                     sendMessage(sender, {text: "Echo: " + event.message.text});
@@ -178,14 +182,14 @@ function showMenu(recipientId) {
     sendMessage(recipientId, messageData);
 };
 
-
 function showAddMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW ADD MENU"});
 };
 
 function showRemoveMenu(recipientId) {
     sendMessage(recipientId, {text: "SHOW REMOVE MENU"});
-}; 
+};
+
 
 // generic function sending messages
 function sendMessage(recipientId, message) {  
@@ -249,6 +253,27 @@ function kittenMessage(recipientId, text) {
     return false;
 
 };
+
+function addNewMedication(userId, medInfo) {
+    var medInfoArr = creatMedJson(medInfo.split(" "));
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+        console.log(medInfoArr);
+
+        client
+            .query('INSERT INTO user_meds (userid, medname, dosage, timeofaction) VALUES($1, $2, $3, $4)', [recipientId, medInfoArr.name, medInfoArr.dosage, medInfoArr.timeOfAction])
+            .on('row', function(row) {
+                console.log(JSON.stringify(row));
+            });
+    });
+}
+
+
+function createMedJson(medInfo) {
+    return '{name:medInfo[0], dosage:medInfo[1], timeOfAction:medInfo[2]}';
+}
 
 
 /*-------------------------------------------------------------------------------------------------------------------- */
