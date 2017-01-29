@@ -93,27 +93,27 @@ function Emergency(recipientId){
 // Display the menu in a webview
 function showMenu(recipientId) {
     let messageData = {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "generic",
-                "elements": [{
-                    "title": "Kitten",
-                    "subtitle": "Cute kitten picture",
-                    "image_url": imageUrl,
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "Add",
-                        "payload": "PAYLOAD_ADD",
-                        }, {
-                        "type": "postback",
-                        "title": "Remove",
-                        "payload": "PAYLOAD_REMOVE",
-                    }]
-                }]
-            }
-        }
-    };
+                "attachment": {
+                    "type": "template",
+                    "payload": {
+                        "template_type": "generic",
+                        "elements": [{
+                            "title": "Kitten",
+                            "subtitle": "Cute kitten picture",
+                            "image_url": imageUrl ,
+                            "buttons": [{
+                                "type": "web_url",
+                                "url": imageUrl,
+                                "title": "Show kitten"
+                                }, {
+                                "type": "postback",
+                                "title": "I like this",
+                                "payload": "User " + recipientId + " likes kitten " + imageUrl,
+                            }]
+                        }]
+                    }
+                }
+            };
 
     sendMessage(recipientId, messageData);
 };
