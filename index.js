@@ -1,7 +1,7 @@
 var express = require('express');  
 var bodyParser = require('body-parser');  
 var request = require('request');  
-var pg = require('pq');
+var pg = require('pg');
 var annie = require('./annie.js')
 var app = express();
 
