@@ -53,7 +53,7 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: annie.getMedications(0)});
                     break;
                 case "!add":
-                    //addMed(sender);
+                    addMed(sender);
                     break;
                 case "!remove":
                     //removeMed(sender);
@@ -78,7 +78,18 @@ app.post('/webhook', function (req, res) {
 });
 
 function addMed(recipientId){
-    sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
+    //sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+
+        client
+            .query('INSERT INTO users VALUES (' + recipientId + ', Ralf')
+            .on('row', function(row) {
+                console.log(JSON.stringify(row));
+            });
+});
 };
 function removeMed(recipientId){
     sendMessage(recipientId, {text: "This should list the meds, numbered, and the number chosen should be removed (after asking)"});
@@ -209,4 +220,3 @@ pg.connect(process.env.DATABASE_URL, function(err, client) {
       console.log(JSON.stringify(row));
     });
 });
-
