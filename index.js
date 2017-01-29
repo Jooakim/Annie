@@ -2,13 +2,16 @@
 var express = require('express');  
 var bodyParser = require('body-parser');  
 var request = require('request');  
+var pg = require('pg');
 var annie = require('./annie.js')
 var app = express();
+
 
 //
 app.use(bodyParser.urlencoded({extended: false}));  
 app.use(bodyParser.json());  
 app.listen((process.env.PORT || 3000));
+
 
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
@@ -51,19 +54,16 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: annie.getMedications(0)});
                     break;
                 case "!add":
-                    addMed(sender);
+                    //addMed(sender);
                     break;
                 case "!remove":
-                    removeMed(sender);
+                    //removeMed(sender);
                     break;
                 case "!status":
-                    statMed(sender);
+                    //statMed(sender);
                     break;
                 case "!ice":
-                    Emergency(sender);
-                    break;
-                case "medsTest":
-                    sendMessage(sender, {text: annie.getMedications(0)});
+                    //Emergency(sender);
                     break;
                 case "simon":
                     var output = annie.getDummyJson(0);
@@ -73,21 +73,11 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: "Echo: " + event.message.text});
                     break;
             }
-        } else if (event.postback) {
-            switch(event.postback) {
-                case "PAYLOAD_ADD":
-                    showAddMenu(sender);
-                    break;
-                case "PAYLOAD_REMOVE":
-                    showRemoveMenu(sender);
-                    break;
-                default:
-                    break;
-            }
-        }
+        } 
     }
     res.sendStatus(200);
 });
+
 function addMed(recipientId){
     sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
 };
@@ -100,20 +90,30 @@ function statMed(recipientId){
 function Emergency(recipientId){
     sendMessage(recipientId, {text: "THIS SHOULD CALL SOMEONE IMPORTANT YO"});
 };
+
 // Display the menu in a webview
 function showMenu(recipientId) {
     let messageData = {
-        "buttons":
-            [{ // Add Button
-                "type":"postback",
-                "title":"Add",
-                "payload":"PAYLOAD_ADD"
-            },
-            { // Remove Item
-                "type":"postback",
-                "title":"Remove",
-                "payload":"PAYLOAD_REMOVE"
-            }]
+        text:"test"
+        // "attachment": {
+        //     "type": "template",
+        //     "payload": {
+        //         "template_type": "generic",
+        //         "elements": [{
+        //             "buttons": [{
+        //                 // Add Button
+        //                 "type":"postback",
+        //                 "title":"Add",
+        //                 "payload":"PAYLOAD_ADD"
+        //             },
+        //             {   // Remove Item
+        //                 "type":"postback",
+        //                 "title":"Remove",
+        //                 "payload":"PAYLOAD_REMOVE"
+        //             }]
+        //         }]
+        //     }
+        // }
     };
 
     sendMessage(recipientId, messageData);
@@ -150,6 +150,7 @@ function showHelpMessage(recipientId)
     });
 };
 */
+
 
 // generic function sending messages
 function sendMessage(recipientId, message) {  
@@ -221,15 +222,16 @@ function kittenMessage(recipientId, text) {
 /*----------------------------------------------                         --------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
 /*-------------------------------------------------------------------------------------------------------------------- */
-/*
+
 pg.defaults.ssl = true;
 pg.connect(process.env.DATABASE_URL, function(err, client) {
-if (err) console.log('Cant reach database');
+  if (err) throw err;
   console.log('Connected to postgres! Getting schemas...');
+
   client
-    .query('SELECT table_schema,table_name FROM information_schema.tables;')
+    .query('SELECT userid FROM user_meds;')
     .on('row', function(row) {
       console.log(JSON.stringify(row));
     });
-});*/
+});
 
