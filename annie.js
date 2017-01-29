@@ -56,11 +56,9 @@ function createScheduleResponse(medicationSchedule, timeToNextMedication) {
 }
 
 
-function addNewMedication(userId, medInfo) {
-    var query = "INSERT INTO " + TABLE_NAME + "(userId, jsonMed) VALUES ($1, $2);";
+exports.addNewMedication = function(userId, medInfo) {
     var medInfoArr = creatMedJson(medInfo.split(" "));
 
-    client.query(query,[userId, medInfoArr]);
 }
 
 

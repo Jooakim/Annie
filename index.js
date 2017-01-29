@@ -41,13 +41,18 @@ app.post('/webhook', function (req, res) {
     for (i = 0; i < events.length; i++) {
         let event = events[i];
         let sender = event.sender.id;
-
+        let splitMessage = events;
+        
         // Check if a message and text string exist
         if (event.message && event.message.text) {
             switch(event.message.text) {
-                case "menu":
-                    showMenu(sender);
-                    break;
+                case "init":
+                if(splitMessage > 1){
+                    addUser(sender, splitMessage[1]);
+                } else {
+                    sendMessage(sender, {text: "Initialize name: init <name>"});
+                }
+                break;
                 case 'showMed':
                     showUser(sender);
                     break;
@@ -58,7 +63,11 @@ app.post('/webhook', function (req, res) {
                     sendMessage(sender, {text: annie.getMedications(0)});
                     break;
                 case "!add":
-                    addMed(sender);
+                if(splitMessage.length > 1){
+                    addMed(sender, splitMessage[1], splitMessage[2]);
+                } else {
+                    sendMessage(sender, {text: "Input medicine <add> <medicineName> <dosage>"});
+                }
                     break;
                 case "!remove":
                     //removeMed(sender);
@@ -72,6 +81,9 @@ app.post('/webhook', function (req, res) {
                 case "simon":
                     var output = annie.getDummyJson(0);
                     sendMessage(sender, {text: output.name});
+                    break;
+                case "addMed":
+                    addNewMedication(sender, "test hallo olla");
                     break;
                 default:
                     sendMessage(sender, {text: "Echo: " + event.message.text});
@@ -90,8 +102,7 @@ app.post('/webhook', function (req, res) {
     }
     res.sendStatus(200);
 });
-
-function addMed(recipientId){
+function addUser(recipientId, name){
     //sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
     pg.defaults.ssl = true;
     pg.connect(process.env.DATABASE_URL, function(err, client) {
@@ -99,7 +110,24 @@ function addMed(recipientId){
         console.log('Connected to postgres! Getting schemas...');
 
         client
-            .query('INSERT INTO users (userid, name) VALUES($1, $2)', [recipientId, 'Goran'])
+            .query('INSERT INTO users (userid, name) VALUES($1, $2)', [recipientId, name])
+            .on('row', function(row) {
+                console.log(JSON.stringify(row));
+            }).on('error', function(err){
+               sendMessage(recipientId, {text: "The user is already initialized"}) 
+            });
+    });
+};
+
+function addMed(recipientId, medicineName, dosage){
+    //sendMessage(recipientId,{text: "This should ask for med name, frequency, and duration"});
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+
+        client
+            .query('INSERT INTO usermeds (userid, name) VALUES($1, $2)', [recipientId, 'Goran'])
             .on('row', function(row) {
                 console.log(JSON.stringify(row));
             });
@@ -137,9 +165,6 @@ function showMenu(recipientId) {
             "payload": {
                 "template_type": "generic",
                 "elements": [{
-                    "title": "First card",
-                    "subtitle": "Element #1 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
                     "buttons": [{
                         "type": "postback",
                         "title": "Remove a prescription.",
@@ -228,6 +253,27 @@ function kittenMessage(recipientId, text) {
     return false;
 
 };
+
+function addNewMedication(userId, medInfo) {
+    var medInfoArr = creatMedJson(medInfo.split(" "));
+    pg.defaults.ssl = true;
+    pg.connect(process.env.DATABASE_URL, function(err, client) {
+        if (err) throw err;
+        console.log('Connected to postgres! Getting schemas...');
+        console.log(medInfoArr);
+
+        client
+            .query('INSERT INTO user_meds (userid, medname, dosage, timeofaction) VALUES($1, $2, $3, $4)', [recipientId, medInfoArr.name, medInfoArr.dosage, medInfoArr.timeOfAction])
+            .on('row', function(row) {
+                console.log(JSON.stringify(row));
+            });
+    });
+}
+
+
+function createMedJson(medInfo) {
+    return '{name:medInfo[0], dosage:medInfo[1], timeOfAction:medInfo[2]}';
+}
 
 
 /*-------------------------------------------------------------------------------------------------------------------- */
