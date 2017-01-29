@@ -94,6 +94,7 @@ function Emergency(recipientId){
 function showMenu(recipientId) {
     let messageData = {
         "attachment": {
+            "text": "showMenu",
             "type": "template",
             "payload": {
                 "template_type": "generic",
