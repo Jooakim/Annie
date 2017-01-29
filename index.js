@@ -40,7 +40,7 @@ app.post('/webhook', function (req, res) {
         if (event.message && event.message.text) {
             switch(event.message.text) {
                 case "menu":
-                    displayMenu(sender);
+                    showMenu(sender);
                     break;
                 case "help":
                     sendMessage(sender, {text: "Commands:\n !add, !remove, !status, !ice (In Case of Emergency)"});
@@ -59,10 +59,10 @@ app.post('/webhook', function (req, res) {
         } else if (event.postback) {
             switch(event.postback) {
                 case "PAYLOAD_ADD":
-                    fnAdd(sender);
+                    showAddMenu(sender);
                     break;
                 case "PAYLOAD_REMOVE":
-                    fnRemove(sender);
+                    showAddMenu(sender);
                     break;
                 default:
                     break;
